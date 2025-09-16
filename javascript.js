@@ -64,109 +64,101 @@ if (themeToggle) {
     themeToggle.addEventListener('click', toggleTheme);
 }
 
-// Ambient Music Functionality
+// Mouse Trail Functionality
 const musicToggle = document.getElementById('music-toggle');
 const musicIcon = document.querySelector('.music-icon');
-let ambientAudio = null;
-let isPlaying = false;
+let mouseTrailEnabled = false;
+let mouseTrails = [];
 
-function createAmbientAudio() {
-    // Create a simple ambient tone using Web Audio API
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+function createMouseTrail(e) {
+    if (!mouseTrailEnabled) return;
     
-    // Create oscillators for ambient sound
-    const oscillator1 = audioContext.createOscillator();
-    const oscillator2 = audioContext.createOscillator();
-    const oscillator3 = audioContext.createOscillator();
+    const trail = document.createElement('div');
+    trail.className = 'mouse-trail';
+    trail.style.left = e.clientX + 'px';
+    trail.style.top = e.clientY + 'px';
+    trail.style.position = 'fixed';
+    trail.style.width = '8px';
+    trail.style.height = '8px';
+    trail.style.background = 'linear-gradient(45deg, #00ff88, #28a745)';
+    trail.style.borderRadius = '50%';
+    trail.style.pointerEvents = 'none';
+    trail.style.zIndex = '9999';
+    trail.style.transition = 'all 0.5s ease-out';
+    trail.style.boxShadow = '0 0 10px rgba(0, 255, 136, 0.7)';
     
-    // Create gain nodes for volume control
-    const gainNode1 = audioContext.createGain();
-    const gainNode2 = audioContext.createGain();
-    const gainNode3 = audioContext.createGain();
-    const masterGain = audioContext.createGain();
+    document.body.appendChild(trail);
+    mouseTrails.push(trail);
     
-    // Set frequencies for a cyberpunk ambient sound
-    oscillator1.frequency.setValueAtTime(55, audioContext.currentTime); // Low bass
-    oscillator2.frequency.setValueAtTime(110, audioContext.currentTime); // Sub bass
-    oscillator3.frequency.setValueAtTime(220, audioContext.currentTime); // Mid tone
+    // Animate trail
+    setTimeout(() => {
+        trail.style.opacity = '0';
+        trail.style.transform = 'scale(0)';
+    }, 50);
     
-    // Set oscillator types
-    oscillator1.type = 'sine';
-    oscillator2.type = 'triangle';
-    oscillator3.type = 'sawtooth';
-    
-    // Set volumes (very low for ambient effect)
-    gainNode1.gain.setValueAtTime(0.05, audioContext.currentTime);
-    gainNode2.gain.setValueAtTime(0.03, audioContext.currentTime);
-    gainNode3.gain.setValueAtTime(0.02, audioContext.currentTime);
-    masterGain.gain.setValueAtTime(0.1, audioContext.currentTime);
-    
-    // Connect nodes
-    oscillator1.connect(gainNode1);
-    oscillator2.connect(gainNode2);
-    oscillator3.connect(gainNode3);
-    
-    gainNode1.connect(masterGain);
-    gainNode2.connect(masterGain);
-    gainNode3.connect(masterGain);
-    
-    masterGain.connect(audioContext.destination);
-    
-    // Add subtle frequency modulation for more interesting sound
-    const lfo = audioContext.createOscillator();
-    const lfoGain = audioContext.createGain();
-    
-    lfo.frequency.setValueAtTime(0.1, audioContext.currentTime);
-    lfo.type = 'sine';
-    lfoGain.gain.setValueAtTime(5, audioContext.currentTime);
-    
-    lfo.connect(lfoGain);
-    lfoGain.connect(oscillator3.frequency);
-    
-    return {
-        start: () => {
-            oscillator1.start();
-            oscillator2.start();
-            oscillator3.start();
-            lfo.start();
-        },
-        stop: () => {
-            oscillator1.stop();
-            oscillator2.stop();
-            oscillator3.stop();
-            lfo.stop();
-        },
-        context: audioContext
-    };
-}
-
-function toggleMusic() {
-    if (!isPlaying) {
-        try {
-            ambientAudio = createAmbientAudio();
-            ambientAudio.start();
-            isPlaying = true;
-            musicIcon.textContent = '🔇';
-            musicToggle.classList.add('playing');
-            musicToggle.title = 'Stop Ambient Music';
-        } catch (error) {
-            console.log('Could not start ambient audio:', error);
+    // Remove trail after animation
+    setTimeout(() => {
+        if (trail.parentNode) {
+            document.body.removeChild(trail);
         }
-    } else {
-        if (ambientAudio) {
-            ambientAudio.stop();
-            ambientAudio.context.close();
-            ambientAudio = null;
+        const index = mouseTrails.indexOf(trail);
+        if (index > -1) {
+            mouseTrails.splice(index, 1);
         }
-        isPlaying = false;
-        musicIcon.textContent = '🎵';
-        musicToggle.classList.remove('playing');
-        musicToggle.title = 'Play Ambient Music';
+    }, 600);
+    
+    // Limit number of trails
+    if (mouseTrails.length > 20) {
+        const oldTrail = mouseTrails.shift();
+        if (oldTrail.parentNode) {
+            document.body.removeChild(oldTrail);
+        }
     }
 }
 
+function toggleMouseTrail() {
+    mouseTrailEnabled = !mouseTrailEnabled;
+    
+    if (mouseTrailEnabled) {
+        musicIcon.textContent = '✨';
+        musicToggle.classList.add('playing');
+        musicToggle.title = 'Disable Mouse Trail';
+        document.addEventListener('mousemove', createMouseTrail);
+        localStorage.setItem('mouseTrail', 'enabled');
+    } else {
+        musicIcon.textContent = '🌟';
+        musicToggle.classList.remove('playing');
+        musicToggle.title = 'Enable Mouse Trail';
+        document.removeEventListener('mousemove', createMouseTrail);
+        localStorage.setItem('mouseTrail', 'disabled');
+        
+        // Clear existing trails
+        mouseTrails.forEach(trail => {
+            if (trail.parentNode) {
+                document.body.removeChild(trail);
+            }
+        });
+        mouseTrails = [];
+    }
+}
+
+// Load saved mouse trail preference
+const savedMouseTrail = localStorage.getItem('mouseTrail');
+if (savedMouseTrail === 'enabled') {
+    mouseTrailEnabled = true;
+    if (musicIcon) musicIcon.textContent = '✨';
+    if (musicToggle) {
+        musicToggle.classList.add('playing');
+        musicToggle.title = 'Disable Mouse Trail';
+    }
+    document.addEventListener('mousemove', createMouseTrail);
+} else {
+    if (musicIcon) musicIcon.textContent = '�';
+    if (musicToggle) musicToggle.title = 'Enable Mouse Trail';
+}
+
 if (musicToggle) {
-    musicToggle.addEventListener('click', toggleMusic);
+    musicToggle.addEventListener('click', toggleMouseTrail);
 }
 
 document.addEventListener('mousemove', function(e) {

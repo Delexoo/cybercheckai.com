@@ -14,39 +14,432 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="articles.html">Articles</a></li>
                 <li><a href="attacks.html">Cyber Attacks</a></li>
-                <li><a href="hackers.html">Hackers</a></li>
+                <li><a href="tools.html">Security Tools</a></li>
                 <li><a href="viruses.html">Viruses</a></li>
                 <li><a href="resources.html">Resources</a></li>
             </ul>
-            <div class="navbar-dropdown">
-                <button class="dropdown-btn">More ▾</button>
-                <div class="dropdown-content">
-                    <a href="about.html">About</a>
-                    <a href="tools.html">Tools</a>
-                    <a href="contact.html">Contact</a>
+            <div class="navbar-controls">
+                <button id="theme-toggle" class="theme-toggle" title="Toggle Dark/Light Mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button id="music-toggle" class="music-toggle" title="Toggle Ambient Music">
+                    <span class="music-icon">🎵</span>
+                </button>
+                <div class="navbar-dropdown">
+                    <button class="dropdown-btn">More ▾</button>
+                    <div class="dropdown-content">
+                        <a href="about.html">About</a>
+                        <a href="tools.html">Tools</a>
+                        <a href="contact.html">Contact</a>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
     <main>
+        <section class="content">
+            <h2>Essential Security Tools</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">🔒</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Bitwarden Password Manager</h3>
+                        <p class="tool-description">Secure password manager with end-to-end encryption. Generate, store, and manage strong passwords across all your devices.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Cross-Platform</span>
+                            <span class="feature-tag">Open Source</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://bitwarden.com/download/" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🛡️</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Malwarebytes Anti-Malware</h3>
+                        <p class="tool-description">Advanced malware detection and removal tool. Protects against viruses, ransomware, and other threats in real-time.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Real-time Protection</span>
+                            <span class="feature-tag">Anti-Ransomware</span>
+                            <span class="price-tag freemium">💙 Freemium</span>
+                        </div>
+                    </div>
+                    <a href="https://www.malwarebytes.com/mwb-download" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🌐</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">ProtonVPN</h3>
+                        <p class="tool-description">Secure VPN service with no-logs policy. Protect your privacy and encrypt your internet connection worldwide.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">No Logs</span>
+                            <span class="feature-tag">Swiss Privacy</span>
+                            <span class="price-tag freemium">💙 Freemium</span>
+                        </div>
+                    </div>
+                    <a href="https://protonvpn.com/download" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔍</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">VirusTotal</h3>
+                        <p class="tool-description">Free virus, malware and URL scanning service. Analyze suspicious files and URLs to detect malware and other threats.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">70+ Scanners</span>
+                            <span class="feature-tag">Web-based</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://www.virustotal.com/" target="_blank" class="download-btn">
+                        <span class="download-icon">🌐</span>
+                        Visit Site
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">📡</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Wireshark</h3>
+                        <p class="tool-description">Network protocol analyzer for troubleshooting, analysis, and communications protocol development.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Open Source</span>
+                            <span class="feature-tag">Professional</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://www.wireshark.org/download.html" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔐</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">VeraCrypt</h3>
+                        <p class="tool-description">Free disk encryption software based on TrueCrypt. Encrypt your files, folders, and entire drives with strong encryption.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Strong Encryption</span>
+                            <span class="feature-tag">Open Source</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://www.veracrypt.fr/en/Downloads.html" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🕷️</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">OWASP ZAP</h3>
+                        <p class="tool-description">Web application security scanner for finding vulnerabilities in web applications during development and testing.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Web Security</span>
+                            <span class="feature-tag">Vulnerability Scanner</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://www.zaproxy.org/download/" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🗺️</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Nmap</h3>
+                        <p class="tool-description">Network discovery and security auditing tool for network administrators and security professionals.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Network Scanning</span>
+                            <span class="feature-tag">Port Discovery</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://nmap.org/download.html" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">📊</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">KeePass</h3>
+                        <p class="tool-description">Free, open source password manager that stores passwords in a secure database encrypted with AES and Twofish.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Local Storage</span>
+                            <span class="feature-tag">Portable</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://keepass.info/download.html" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔥</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">pfSense</h3>
+                        <p class="tool-description">Open-source firewall and router platform for network security and traffic management in enterprise environments.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Firewall</span>
+                            <span class="feature-tag">Router Platform</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://www.pfsense.org/download/" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🛡️</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">CrowdStrike Falcon</h3>
+                        <p class="tool-description">Enterprise endpoint protection with AI-powered threat detection, response, and prevention capabilities.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">AI Protection</span>
+                            <span class="feature-tag">Enterprise</span>
+                            <span class="price-tag paid">💰 Paid</span>
+                        </div>
+                    </div>
+                    <a href="https://www.crowdstrike.com/products/endpoint-security/" target="_blank" class="download-btn premium">
+                        <span class="download-icon">💎</span>
+                        Learn More
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔑</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">1Password</h3>
+                        <p class="tool-description">Premium password manager with advanced security features, team collaboration, and business-grade protection.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Password Manager</span>
+                            <span class="feature-tag">Team Features</span>
+                            <span class="price-tag paid">💰 Paid</span>
+                        </div>
+                    </div>
+                    <a href="https://1password.com/downloads/" target="_blank" class="download-btn premium">
+                        <span class="download-icon">💎</span>
+                        Try Free Trial
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🌍</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">NordVPN</h3>
+                        <p class="tool-description">Premium VPN service with military-grade encryption, global server network, and advanced privacy features.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Premium VPN</span>
+                            <span class="feature-tag">Global Servers</span>
+                            <span class="price-tag paid">💰 Paid</span>
+                        </div>
+                    </div>
+                    <a href="https://nordvpn.com/download/" target="_blank" class="download-btn premium">
+                        <span class="download-icon">💎</span>
+                        Get NordVPN
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔒</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Kaspersky Security</h3>
+                        <p class="tool-description">Comprehensive antivirus and internet security suite with advanced threat protection and privacy tools.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Antivirus Suite</span>
+                            <span class="feature-tag">Privacy Tools</span>
+                            <span class="price-tag paid">💰 Paid</span>
+                        </div>
+                    </div>
+                    <a href="https://www.kaspersky.com/downloads" target="_blank" class="download-btn premium">
+                        <span class="download-icon">💎</span>
+                        Download Trial
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">⚡</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Windows Defender</h3>
+                        <p class="tool-description">Built-in Windows antivirus and security solution. Provides real-time protection against malware and threats.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Built-in</span>
+                            <span class="feature-tag">Real-time</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="ms-settings:windowsdefender" class="download-btn">
+                        <span class="download-icon">⚙️</span>
+                        Configure
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🦌</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Burp Suite</h3>
+                        <p class="tool-description">Advanced web application security testing platform for finding vulnerabilities and security flaws.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Web Testing</span>
+                            <span class="feature-tag">Security Scanner</span>
+                            <span class="price-tag freemium">💙 Freemium</span>
+                        </div>
+                    </div>
+                    <a href="https://portswigger.net/burp/communitydownload" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔍</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Metasploit</h3>
+                        <p class="tool-description">Penetration testing framework for security testing and vulnerability assessment in controlled environments.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Penetration Testing</span>
+                            <span class="feature-tag">Vulnerability Assessment</span>
+                            <span class="price-tag freemium">💙 Freemium</span>
+                        </div>
+                    </div>
+                    <a href="https://www.metasploit.com/download" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔐</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Hashcat</h3>
+                        <p class="tool-description">Advanced password recovery tool for security professionals and ethical hackers to test password strength.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Password Recovery</span>
+                            <span class="feature-tag">Security Testing</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://hashcat.net/hashcat/" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">📡</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Aircrack-ng</h3>
+                        <p class="tool-description">Complete suite of tools to assess WiFi network security for wireless penetration testing.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">WiFi Security</span>
+                            <span class="feature-tag">Network Testing</span>
+                            <span class="price-tag free">💚 Free</span>
+                        </div>
+                    </div>
+                    <a href="https://www.aircrack-ng.org/downloads.html" target="_blank" class="download-btn">
+                        <span class="download-icon">⬇️</span>
+                        Download
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔒</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">Symantec Endpoint Protection</h3>
+                        <p class="tool-description">Enterprise-grade endpoint security with advanced threat protection and centralized management.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Enterprise Security</span>
+                            <span class="feature-tag">Centralized Management</span>
+                            <span class="price-tag paid">💰 Paid</span>
+                        </div>
+                    </div>
+                    <a href="https://www.broadcom.com/products/cyber-security/endpoint" target="_blank" class="download-btn premium">
+                        <span class="download-icon">💎</span>
+                        Learn More
+                    </a>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🌐</div>
+                    <div class="tool-info">
+                        <h3 class="tool-name">ExpressVPN</h3>
+                        <p class="tool-description">High-speed premium VPN service with advanced security features and 24/7 customer support.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">High-Speed VPN</span>
+                            <span class="feature-tag">24/7 Support</span>
+                            <span class="price-tag paid">💰 Paid</span>
+                        </div>
+                    </div>
+                    <a href="https://www.expressvpn.com/download" target="_blank" class="download-btn premium">
+                        <span class="download-icon">💎</span>
+                        Get ExpressVPN
+                    </a>
+                </div>
+            </div>
+
+            <div class="security-tips">
+                <h2>Security Tool Tips</h2>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h4>💚 Free vs 💰 Paid Tools</h4>
+                        <p>Free tools offer great basic protection, while paid tools provide advanced features, priority support, and enterprise-level security for businesses.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>🔒 Layer Your Security</h4>
+                        <p>Use multiple tools together for comprehensive protection. Combine antivirus, VPN, and password managers for defense in depth.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>📱 Mobile Protection</h4>
+                        <p>Don't forget mobile devices! Most security tools offer mobile apps to protect your smartphones and tablets from threats.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>🔄 Keep Tools Updated</h4>
+                        <p>Enable automatic updates for all security tools to ensure you have the latest threat definitions and security patches.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>📊 Monitor Activity</h4>
+                        <p>Regularly check security tool reports and logs to understand your threat landscape and adjust protection accordingly.</p>
+                    </div>
+                    <div class="tip-card">
+                        <h4>💰 Trial Before You Buy</h4>
+                        <p>Most paid security tools offer free trials. Test them thoroughly to ensure they meet your specific security needs before purchasing.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <section class="hero">
             <h1>Security Tools</h1>
-            <p class="hint">Access free and recommended tools to boost your security.</p>
+            <p class="hint">Download free and recommended tools to boost your cybersecurity.</p>
             <div class="quick-links">
                 <a href="index.html" class="quick-link">Back to Home</a>
             </div>
-        </section>
-        <section class="content">
-            <h2>Featured Tools</h2>
-            <ul>
-                <li><a href="#">Password Manager</a></li>
-                <li><a href="#">VPN Services</a></li>
-                <li><a href="#">Antivirus Scanner</a></li>
-            </ul>
         </section>
     </main>
     <footer class="footer">
         <p>&copy; 2025 CyberSecure. Stay safe online.</p>
     </footer>
+    <script src="javascript.js"></script>
 </body>
 </html>

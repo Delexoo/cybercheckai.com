@@ -14,7 +14,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="articles.html">Articles</a></li>
                 <li><a href="attacks.html">Cyber Attacks</a></li>
-                <li><a href="hackers.html">Hackers</a></li>
+                <li><a href="tools.html">Security Tools</a></li>
                 <li><a href="viruses.html">Viruses</a></li>
                 <li><a href="resources.html">Resources</a></li>
             </ul>
@@ -26,9 +26,191 @@
                     <a href="contact.html">Contact</a>
                 </div>
             </div>
+            <div class="navbar-controls">
+                <button id="theme-toggle" class="control-btn" title="Toggle Theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button id="music-toggle" class="control-btn" title="Toggle Mouse Trail">
+                    <span class="music-icon">🐭</span>
+                </button>
+            </div>
         </nav>
     </header>
     <main>
+        <section class="content">
+            <h2>Cyber Attack Methods & Threats</h2>
+            <div class="attacks-grid">
+                <div class="attack-card">
+                    <div class="attack-icon">🎣</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Phishing & Social Engineering</h3>
+                        <p class="attack-description">Deceptive techniques used to trick users into revealing sensitive information through fake emails, websites, and messages.</p>
+                        <div class="threat-level high">� High Risk</div>
+                        <a href="https://www.cisa.gov/phishing" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🔒</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Ransomware Attacks</h3>
+                        <p class="attack-description">Malicious software that encrypts files and demands payment for decryption, causing massive business disruption.</p>
+                        <div class="threat-level critical">🔴 Critical Risk</div>
+                        <a href="https://www.cisa.gov/stopransomware" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🌐</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">DDoS Attacks</h3>
+                        <p class="attack-description">Distributed Denial of Service attacks that overwhelm servers with traffic to make websites and services unavailable.</p>
+                        <div class="threat-level high">🔴 High Risk</div>
+                        <a href="https://www.cloudflare.com/learning/ddos/what-is-a-ddos-attack/" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">💥</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Malware & Viruses</h3>
+                        <p class="attack-description">Malicious software designed to damage, disable, or gain unauthorized access to computer systems and data.</p>
+                        <div class="threat-level critical">🔴 Critical Risk</div>
+                        <a href="https://www.us-cert.gov/ncas/tips/ST04-001" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">💉</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">SQL Injection</h3>
+                        <p class="attack-description">Web security vulnerability allowing attackers to interfere with database queries and access sensitive information.</p>
+                        <div class="threat-level high">🔴 High Risk</div>
+                        <a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🌊</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Cross-Site Scripting (XSS)</h3>
+                        <p class="attack-description">Injection attacks that insert malicious scripts into trusted websites to steal user data and hijack sessions.</p>
+                        <div class="threat-level high">🔴 High Risk</div>
+                        <a href="https://owasp.org/www-community/attacks/xss/" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🔓</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Insider Threats</h3>
+                        <p class="attack-description">Security risks posed by people within the organization who have authorized access to company data and systems.</p>
+                        <div class="threat-level medium">🟡 Medium Risk</div>
+                        <a href="https://www.cisa.gov/insider-threat-mitigation" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">�📱</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Mobile Device Attacks</h3>
+                        <p class="attack-description">Malicious apps and attacks specifically targeting smartphones and tablets to steal personal data.</p>
+                        <div class="threat-level high">🔴 High Risk</div>
+                        <a href="https://www.symantec.com/blogs/threat-intelligence/mobile-malware-trends" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">☁️</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Cloud Security Breaches</h3>
+                        <p class="attack-description">Attacks targeting cloud infrastructure and services, exploiting misconfigurations and weak access controls.</p>
+                        <div class="threat-level critical">🔴 Critical Risk</div>
+                        <a href="https://www.cisa.gov/cloud-security" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🏭</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Supply Chain Attacks</h3>
+                        <p class="attack-description">Sophisticated attacks targeting software supply chains to compromise multiple organizations through trusted vendors.</p>
+                        <div class="threat-level critical">🔴 Critical Risk</div>
+                        <a href="https://www.cisa.gov/supply-chain-risk-management" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🕷️</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Advanced Persistent Threats (APT)</h3>
+                        <p class="attack-description">Long-term, stealthy cyber attacks designed to maintain persistent access to target networks for espionage.</p>
+                        <div class="threat-level critical">🔴 Critical Risk</div>
+                        <a href="https://www.fireeye.com/current-threats/apt-groups.html" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">💳</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Credit Card Skimming</h3>
+                        <p class="attack-description">Physical and digital attacks that steal credit card information from ATMs, point-of-sale systems, and online forms.</p>
+                        <div class="threat-level high">🔴 High Risk</div>
+                        <a href="https://www.fbi.gov/scams-and-safety/common-scams-and-crimes/credit-card-fraud" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="attack-card">
+                    <div class="attack-icon">🎮</div>
+                    <div class="attack-info">
+                        <h3 class="attack-title">Gaming Platform Attacks</h3>
+                        <p class="attack-description">Attacks targeting gaming accounts, virtual assets, and gaming platforms to steal credentials and in-game currency.</p>
+                        <div class="threat-level medium">🟡 Medium Risk</div>
+                        <a href="https://www.kaspersky.com/resource-center/threats/gaming-security-threats" target="_blank" class="learn-more-btn">
+                            <span>Learn More</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
         <section class="hero">
             <h1>Cyber Attacks</h1>
             <p class="hint">Learn about different types of cyber attacks and how to stay protected.</p>
@@ -36,18 +218,10 @@
                 <a href="index.html" class="quick-link">Back to Home</a>
             </div>
         </section>
-        <section class="content">
-            <h2>Common Attack Types</h2>
-            <ul>
-                <li><a href="#">Phishing</a></li>
-                <li><a href="#">Ransomware</a></li>
-                <li><a href="#">DDoS Attacks</a></li>
-                <li><a href="#">Malware</a></li>
-            </ul>
-        </section>
     </main>
     <footer class="footer">
         <p>&copy; 2025 CyberSecure. Stay safe online.</p>
     </footer>
+    <script src="javascript.js"></script>
 </body>
 </html>
