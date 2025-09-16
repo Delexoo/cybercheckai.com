@@ -92,6 +92,42 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
+.navbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle, .music-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.theme-toggle:hover, .music-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.music-toggle.playing {
+    background: rgba(255, 255, 255, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
 .navbar-dropdown {
     position: relative;
 }
@@ -628,4 +664,240 @@ form input:focus, form textarea:focus {
 
 form input::placeholder, form textarea::placeholder {
     color: #888888;
+}
+
+/* Light Mode Styles */
+body.light-mode {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+    color: #212529;
+}
+
+body.light-mode .binary-bg {
+    opacity: 0.05;
+}
+
+body.light-mode .binary-code {
+    color: #212529;
+}
+
+body.light-mode .navbar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .navbar-logo {
+    color: #212529;
+}
+
+body.light-mode .navbar-menu li a {
+    color: #495057;
+}
+
+body.light-mode .navbar-menu li a:hover {
+    color: #212529;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .theme-toggle, 
+body.light-mode .music-toggle {
+    background: rgba(0, 0, 0, 0.1);
+    color: #212529;
+}
+
+body.light-mode .theme-toggle:hover, 
+body.light-mode .music-toggle:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .dropdown-btn {
+    background: rgba(0, 0, 0, 0.1);
+    color: #212529;
+}
+
+body.light-mode .dropdown-btn:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .dropdown-content {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .dropdown-content a {
+    color: #495057;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .dropdown-content a:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #212529;
+}
+
+body.light-mode .cyber-title {
+    color: #212529;
+    text-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .brand {
+    color: #495057;
+}
+
+body.light-mode .subtitle {
+    color: #6c757d;
+}
+
+body.light-mode .ai-search-bar {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .ai-search-bar:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .ai-search-bar input {
+    color: #212529;
+}
+
+body.light-mode .ai-search-bar input::placeholder {
+    color: #6c757d;
+}
+
+body.light-mode .ai-search-btn {
+    background: linear-gradient(135deg, #212529 0%, #495057 100%);
+    color: #ffffff;
+}
+
+body.light-mode .ai-response {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #212529;
+}
+
+body.light-mode .ai-response::before {
+    border-bottom-color: rgba(255, 255, 255, 0.9);
+}
+
+body.light-mode .stats-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .stats-card:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .stats-main {
+    color: #212529;
+}
+
+body.light-mode .stats-label {
+    color: #495057;
+}
+
+body.light-mode .stats-change {
+    background: rgba(0, 0, 0, 0.1);
+    color: #212529;
+}
+
+body.light-mode .quick-actions h2 {
+    color: #212529;
+}
+
+body.light-mode .action-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #212529;
+}
+
+body.light-mode .action-card:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    color: #212529;
+}
+
+body.light-mode .action-desc {
+    color: #495057;
+}
+
+body.light-mode .common-questions, 
+body.light-mode .fun-facts {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .common-questions h2, 
+body.light-mode .fun-facts h2 {
+    color: #212529;
+}
+
+body.light-mode .common-questions li, 
+body.light-mode .fun-facts li {
+    color: #495057;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content h2 {
+    color: #212529;
+}
+
+body.light-mode .content p {
+    color: #495057;
+}
+
+body.light-mode .content li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content a {
+    color: #212529;
+}
+
+body.light-mode .content a:hover {
+    color: #495057;
+}
+
+body.light-mode .quick-link {
+    background: rgba(0, 0, 0, 0.1);
+    color: #212529;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .quick-link:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #212529;
+}
+
+body.light-mode .footer {
+    background: rgba(255, 255, 255, 0.9);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: #6c757d;
+}
+
+body.light-mode .binary-trail {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+body.light-mode form input, 
+body.light-mode form textarea {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #212529;
+}
+
+body.light-mode form input:focus, 
+body.light-mode form textarea:focus {
+    border-color: rgba(0, 0, 0, 0.5);
+}
+
+body.light-mode form input::placeholder, 
+body.light-mode form textarea::placeholder {
+    color: #6c757d;
 }

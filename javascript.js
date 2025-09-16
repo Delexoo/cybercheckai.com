@@ -42,6 +42,133 @@ function createBinaryBackground() {
 // Initialize background animation when page loads
 window.addEventListener('DOMContentLoaded', createBinaryBackground);
 
+// Theme Toggle Functionality
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.querySelector('.theme-icon');
+
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLightMode = document.body.classList.contains('light-mode');
+    themeIcon.textContent = isLightMode ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+}
+
+// Load saved theme
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+    themeIcon.textContent = '☀️';
+}
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+}
+
+// Ambient Music Functionality
+const musicToggle = document.getElementById('music-toggle');
+const musicIcon = document.querySelector('.music-icon');
+let ambientAudio = null;
+let isPlaying = false;
+
+function createAmbientAudio() {
+    // Create a simple ambient tone using Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create oscillators for ambient sound
+    const oscillator1 = audioContext.createOscillator();
+    const oscillator2 = audioContext.createOscillator();
+    const oscillator3 = audioContext.createOscillator();
+    
+    // Create gain nodes for volume control
+    const gainNode1 = audioContext.createGain();
+    const gainNode2 = audioContext.createGain();
+    const gainNode3 = audioContext.createGain();
+    const masterGain = audioContext.createGain();
+    
+    // Set frequencies for a cyberpunk ambient sound
+    oscillator1.frequency.setValueAtTime(55, audioContext.currentTime); // Low bass
+    oscillator2.frequency.setValueAtTime(110, audioContext.currentTime); // Sub bass
+    oscillator3.frequency.setValueAtTime(220, audioContext.currentTime); // Mid tone
+    
+    // Set oscillator types
+    oscillator1.type = 'sine';
+    oscillator2.type = 'triangle';
+    oscillator3.type = 'sawtooth';
+    
+    // Set volumes (very low for ambient effect)
+    gainNode1.gain.setValueAtTime(0.05, audioContext.currentTime);
+    gainNode2.gain.setValueAtTime(0.03, audioContext.currentTime);
+    gainNode3.gain.setValueAtTime(0.02, audioContext.currentTime);
+    masterGain.gain.setValueAtTime(0.1, audioContext.currentTime);
+    
+    // Connect nodes
+    oscillator1.connect(gainNode1);
+    oscillator2.connect(gainNode2);
+    oscillator3.connect(gainNode3);
+    
+    gainNode1.connect(masterGain);
+    gainNode2.connect(masterGain);
+    gainNode3.connect(masterGain);
+    
+    masterGain.connect(audioContext.destination);
+    
+    // Add subtle frequency modulation for more interesting sound
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    
+    lfo.frequency.setValueAtTime(0.1, audioContext.currentTime);
+    lfo.type = 'sine';
+    lfoGain.gain.setValueAtTime(5, audioContext.currentTime);
+    
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator3.frequency);
+    
+    return {
+        start: () => {
+            oscillator1.start();
+            oscillator2.start();
+            oscillator3.start();
+            lfo.start();
+        },
+        stop: () => {
+            oscillator1.stop();
+            oscillator2.stop();
+            oscillator3.stop();
+            lfo.stop();
+        },
+        context: audioContext
+    };
+}
+
+function toggleMusic() {
+    if (!isPlaying) {
+        try {
+            ambientAudio = createAmbientAudio();
+            ambientAudio.start();
+            isPlaying = true;
+            musicIcon.textContent = '🔇';
+            musicToggle.classList.add('playing');
+            musicToggle.title = 'Stop Ambient Music';
+        } catch (error) {
+            console.log('Could not start ambient audio:', error);
+        }
+    } else {
+        if (ambientAudio) {
+            ambientAudio.stop();
+            ambientAudio.context.close();
+            ambientAudio = null;
+        }
+        isPlaying = false;
+        musicIcon.textContent = '🎵';
+        musicToggle.classList.remove('playing');
+        musicToggle.title = 'Play Ambient Music';
+    }
+}
+
+if (musicToggle) {
+    musicToggle.addEventListener('click', toggleMusic);
+}
+
 document.addEventListener('mousemove', function(e) {
     const trail = document.createElement('div');
     trail.className = 'binary-trail';
@@ -66,6 +193,19 @@ window.addEventListener('DOMContentLoaded', () => {
 const searchBtn = document.getElementById('search-btn');
 const aiSearch = document.getElementById('ai-search');
 const aiResponse = document.getElementById('ai-response');
+
+function formatAIResponse(text) {
+    // Clean up markdown-style formatting
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
+        .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
+        .replace(/\n\n/g, '</p><p>') // Paragraphs
+        .replace(/\n/g, '<br>') // Line breaks
+        .replace(/^/, '<p>') // Start with paragraph
+        .replace(/$/, '</p>') // End with paragraph
+        .replace(/<p><\/p>/g, '') // Remove empty paragraphs
+        .replace(/\`(.*?)\`/g, '<code>$1</code>'); // Inline code
+}
 
 async function fetchAIResponse(question) {
     // Google Gemini API
@@ -93,20 +233,12 @@ async function fetchAIResponse(question) {
         });
         const data = await res.json();
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-            return data.candidates[0].content.parts[0].text;
+            return formatAIResponse(data.candidates[0].content.parts[0].text);
         } else {
             return 'Sorry, I could not find an answer.';
         }
     } catch (err) {
         return 'Error connecting to AI service.';
-    }
-}
-
-function speak(text) {
-    if ('speechSynthesis' in window) {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-US';
-        window.speechSynthesis.speak(utter);
     }
 }
 
@@ -116,12 +248,11 @@ if (searchBtn && aiSearch && aiResponse) {
         if (!question) return;
         
         // Show response bubble and add loading text
-        aiResponse.textContent = 'Thinking...';
+        aiResponse.innerHTML = '<p>Thinking...</p>';
         aiResponse.classList.add('show');
         
         const answer = await fetchAIResponse(question);
-        aiResponse.textContent = answer;
-        speak(answer);
+        aiResponse.innerHTML = answer;
     });
     
     aiSearch.addEventListener('keydown', async (e) => {
