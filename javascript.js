@@ -580,6 +580,9 @@ if (searchBtn && aiSearch && aiResponse) {
                                                     searchContainer.style.maxWidth = '';
                                                     searchContainer.style.transition = '';
                                                     
+                                                    // Force reflow to ensure styles are applied
+                                                    void searchContainer.offsetHeight;
+                                                    
                                                     searchBarAnimationInProgress = false;
                                                     searchBarResetTimeout = null;
                                                 });
@@ -671,15 +674,16 @@ if (searchBtn && aiSearch && aiResponse) {
     }
     
     function updateSearchState() {
-        const hasContent = aiSearch.value.trim().length > 0 || aiResponse.innerHTML.trim().length > 0;
-        if (hasContent) {
-            hero.classList.add('search-active');
-            document.body.classList.add('search-active');
-        } else {
-            resetSearchBarPosition();
-            hero.classList.remove('search-active');
-            document.body.classList.remove('search-active');
+        // Only add search-active class, never remove it automatically
+        // User must hold ESC to go back to original state
+        if (!hero.classList.contains('search-active')) {
+            const hasContent = aiSearch.value.trim().length > 0 || aiResponse.innerHTML.trim().length > 0;
+            if (hasContent) {
+                hero.classList.add('search-active');
+                document.body.classList.add('search-active');
+            }
         }
+        // Once search-active is set, it stays until ESC is held
     }
     
     // ESC key hold functionality
@@ -949,16 +953,48 @@ if (searchBtn && aiSearch && aiResponse) {
                     moveSearchBarToBottom();
                 }
                 updateQuestionSuggestions();
-            } else if (aiResponse.innerHTML.trim().length === 0) {
-                // Only remove if response is also empty
-                updateSearchState();
+            } else {
+                // When input is cleared, keep search active - user must hold ESC to reset
+                // Ensure search-active class remains and search bar stays at bottom
+                if (!hero.classList.contains('search-active')) {
+                    hero.classList.add('search-active');
+                    document.body.classList.add('search-active');
+                    // If search bar isn't at bottom yet, move it there
+                    if (searchContainer) {
+                        const rect = searchContainer.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight;
+                        const targetBottom = 32; // 2rem = 32px
+                        const targetTop = viewportHeight - targetBottom - rect.height;
+                        
+                        searchContainer.style.position = 'fixed';
+                        searchContainer.style.top = targetTop + 'px';
+                        searchContainer.style.left = '50%';
+                        searchContainer.style.transform = 'translateX(-50%)';
+                    }
+                } else {
+                    // Ensure search bar stays at bottom with proper centering
+                    if (searchContainer) {
+                        searchContainer.style.left = '50%';
+                        searchContainer.style.transform = 'translateX(-50%)';
+                        // Ensure it's fixed at bottom
+                        const rect = searchContainer.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight;
+                        const targetBottom = 32;
+                        const targetTop = viewportHeight - targetBottom - rect.height;
+                        if (searchContainer.style.position !== 'fixed' || Math.abs(parseFloat(searchContainer.style.top) - targetTop) > 10) {
+                            searchContainer.style.position = 'fixed';
+                            searchContainer.style.top = targetTop + 'px';
+                        }
+                    }
+                }
+                // Only update question suggestions, don't reset state
                 updateQuestionSuggestions();
             }
             inputTimeout = null;
         }, 50);
     });
     
-    searchBtn.addEventListener('click', async () => {
+        searchBtn.addEventListener('click', async () => {
         const question = aiSearch.value.trim();
         if (!question) {
             if (currentTypingInterval) {
@@ -966,7 +1002,8 @@ if (searchBtn && aiSearch && aiResponse) {
                 currentTypingInterval = null;
             }
             aiResponse.innerHTML = '';
-            updateSearchState();
+            // Don't call updateSearchState - keep search-active class
+            // User must hold ESC to reset
             updateQuestionSuggestions();
             return;
         }
