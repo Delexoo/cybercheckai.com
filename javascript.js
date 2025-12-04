@@ -228,18 +228,91 @@ const aiSearch = document.getElementById('ai-search');
 const aiResponse = document.getElementById('ai-response');
 
 function formatAIResponse(text) {
-    // Clean up markdown-style formatting
-    let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
-        .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
-        .replace(/\`(.*?)\`/g, '<code>$1</code>') // Inline code
-        .replace(/\n\n+/g, '</p><p>') // Multiple newlines = paragraphs
-        .replace(/\n/g, '<br>') // Single newlines = line breaks
-        .replace(/^/, '<p>') // Start with paragraph
-        .replace(/$/, '</p>') // End with paragraph
-        .replace(/<p><\/p>/g, '') // Remove empty paragraphs
-        .replace(/<p>(<br>)+/g, '<p>') // Remove leading breaks in paragraphs
-        .replace(/(<br>)+<\/p>/g, '</p>'); // Remove trailing breaks in paragraphs
+    if (!text) return '';
+    
+    let formatted = text;
+    
+    // Handle code blocks first (before other formatting)
+    formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    
+    // Handle inline code
+    formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Handle headers
+    formatted = formatted.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    formatted = formatted.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    formatted = formatted.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+    
+    // Handle bold text (must come before italic to avoid conflicts)
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    
+    // Handle italic text (only if not already bold)
+    formatted = formatted.replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>');
+    formatted = formatted.replace(/(?<!_)_(?!_)([^_]+?)(?<!_)_(?!_)/g, '<em>$1</em>');
+    
+    // Handle unordered lists (bullet points) - process line by line
+    const lines = formatted.split('\n');
+    let inList = false;
+    let listItems = [];
+    let processedLines = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const bulletMatch = line.match(/^[\*\-\+]\s+(.+)$/);
+        const numberMatch = line.match(/^\d+\.\s+(.+)$/);
+        
+        if (bulletMatch || numberMatch) {
+            if (!inList) {
+                inList = true;
+                listItems = [];
+            }
+            listItems.push(bulletMatch ? bulletMatch[1] : numberMatch[1]);
+        } else {
+            if (inList) {
+                // Close the list
+                processedLines.push('<ul>' + listItems.map(item => '<li>' + item + '</li>').join('') + '</ul>');
+                listItems = [];
+                inList = false;
+            }
+            processedLines.push(line);
+        }
+    }
+    
+    // Close any remaining list
+    if (inList && listItems.length > 0) {
+        processedLines.push('<ul>' + listItems.map(item => '<li>' + item + '</li>').join('') + '</ul>');
+    }
+    
+    formatted = processedLines.join('\n');
+    
+    // Handle line breaks and paragraphs
+    // Split by double newlines for paragraphs
+    let paragraphs = formatted.split(/\n\n+/);
+    formatted = paragraphs.map(para => {
+        para = para.trim();
+        if (!para) return '';
+        
+        // If it's already a header, list, or code block, don't wrap in <p>
+        if (para.match(/^<(h[1-6]|ul|ol|pre|code)/)) {
+            return para;
+        }
+        
+        // Convert single newlines to <br> within paragraphs
+        para = para.replace(/\n/g, '<br>');
+        
+        // Wrap in paragraph tag
+        return '<p>' + para + '</p>';
+    }).filter(p => p).join('\n');
+    
+    // Clean up empty tags
+    formatted = formatted.replace(/<p>\s*<\/p>/g, '');
+    formatted = formatted.replace(/<ul>\s*<\/ul>/g, '');
+    formatted = formatted.replace(/<li>\s*<\/li>/g, '');
+    
+    // Clean up extra whitespace
+    formatted = formatted.replace(/\n{3,}/g, '\n\n');
+    formatted = formatted.trim();
     
     return formatted;
 }
@@ -305,8 +378,14 @@ function typeText(element, htmlText, speed = 15) {
 
 async function fetchAIResponse(question) {
     // Google Gemini API
-    const apiKey = 'AIzaSyAKs_ZNxFN9RULaf7QnWiD05-7BHxf-vUQ';
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    const apiKey = 'AIzaSyDhFyw86NwvjF8HTaM0XQvaqHYFSBNjWks';
+    
+    // Check if API key is valid
+    if (!apiKey || apiKey.trim() === '') {
+        return 'Please configure your Google Gemini API key. Get one from https://aistudio.google.com/apikey';
+    }
+    
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     const body = {
         contents: [
             {
@@ -322,19 +401,43 @@ async function fetchAIResponse(question) {
         const res = await fetch(url, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                'X-goog-api-key': apiKey
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
         });
-        const data = await res.json();
-        if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-            return formatAIResponse(data.candidates[0].content.parts[0].text);
-        } else {
-            return 'Sorry, I could not find an answer.';
+        
+        if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            console.error('API Error:', res.status, errorData);
+            
+            // Provide helpful error messages
+            if (res.status === 400 && errorData.error?.message?.includes('API key')) {
+                return 'Invalid API key. Please check that you have:\n1. Replaced "YOUR_API_KEY_HERE" with your actual API key\n2. Got your key from https://aistudio.google.com/apikey\n3. Enabled the Gemini API in Google Cloud Console';
+            }
+            
+            return `Error: ${res.status} - ${errorData.error?.message || 'Failed to get response'}`;
         }
+        
+        const data = await res.json();
+        console.log('API Response:', data);
+        
+        // Check for response in different possible structures
+        if (data.candidates && data.candidates[0]) {
+            const candidate = data.candidates[0];
+            if (candidate.content && candidate.content.parts && candidate.content.parts[0]) {
+                const text = candidate.content.parts[0].text;
+                if (text) {
+                    return formatAIResponse(text);
+                }
+            }
+        }
+        
+        // If we get here, the response structure is unexpected
+        console.error('Unexpected response structure:', data);
+        return 'Sorry, I could not find an answer. The response format was unexpected.';
     } catch (err) {
-        return 'Error connecting to AI service.';
+        console.error('Fetch error:', err);
+        return `Error connecting to AI service: ${err.message}`;
     }
 }
 
@@ -519,6 +622,21 @@ if (searchBtn && aiSearch && aiResponse) {
         
         aiSearch.value = '';
         aiResponse.innerHTML = '';
+        
+        // Clear question suggestions state
+        if (questionSuggestions) {
+            questionSuggestions.classList.remove('has-response');
+        }
+        if (questionInterval) {
+            clearInterval(questionInterval);
+            questionInterval = null;
+        }
+        if (questionTypingInterval) {
+            clearInterval(questionTypingInterval);
+            questionTypingInterval = null;
+        }
+        isDeleting = false;
+        
         resetSearchBarPosition();
         hero.classList.remove('search-active');
         document.body.classList.remove('search-active');
@@ -620,10 +738,32 @@ if (searchBtn && aiSearch && aiResponse) {
     let questionInterval = null;
     
     function updateQuestionSuggestions() {
-        const hasResponse = aiResponse.innerHTML.trim().length > 0 && !aiResponse.innerHTML.includes('Thinking...');
+        const hasResponse = aiResponse.innerHTML.trim().length > 0;
         const isTyping = aiSearch.value.trim().length > 0;
         
+        // Stop all question animations immediately if response exists
+        if (hasResponse) {
+            if (questionInterval) {
+                clearInterval(questionInterval);
+                questionInterval = null;
+            }
+            if (questionTypingInterval) {
+                clearInterval(questionTypingInterval);
+                questionTypingInterval = null;
+            }
+            isDeleting = false;
+            if (questionSuggestions) {
+                questionSuggestions.classList.add('has-response');
+                // Clear the text content to stop any visible text
+                if (suggestionText) {
+                    suggestionText.textContent = '';
+                }
+            }
+            return; // Exit early when response exists
+        }
+        
         if (isTyping && !hasResponse && questionSuggestions) {
+            // Show questions only when typing and no response
             questionSuggestions.classList.remove('has-response');
             if (!questionInterval) {
                 // Start showing questions (they will cycle automatically after typing/deleting)
@@ -634,6 +774,7 @@ if (searchBtn && aiSearch && aiResponse) {
                 }, 10000);
             }
         } else {
+            // Hide questions when not typing
             if (questionInterval) {
                 clearInterval(questionInterval);
                 questionInterval = null;
@@ -643,8 +784,11 @@ if (searchBtn && aiSearch && aiResponse) {
                 questionTypingInterval = null;
             }
             isDeleting = false;
-            if (hasResponse && questionSuggestions) {
+            if (questionSuggestions) {
                 questionSuggestions.classList.add('has-response');
+                if (suggestionText) {
+                    suggestionText.textContent = '';
+                }
             }
         }
     }
@@ -830,16 +974,39 @@ if (searchBtn && aiSearch && aiResponse) {
         // Activate search mode with smooth transition
         moveSearchBarToBottom();
         
-        // Show loading text
-        aiResponse.innerHTML = '<p>Thinking...</p>';
-        aiResponse.style.display = 'block';
-        updateQuestionSuggestions();
+        // Step 1: Stop all question animations immediately
+        if (questionInterval) {
+            clearInterval(questionInterval);
+            questionInterval = null;
+        }
+        if (questionTypingInterval) {
+            clearInterval(questionTypingInterval);
+            questionTypingInterval = null;
+        }
+        isDeleting = false;
         
-        const answer = await fetchAIResponse(question);
+        // Step 2: Fade out questions first (they will fade out over 0.3s)
+        if (questionSuggestions) {
+            questionSuggestions.classList.add('has-response');
+            if (suggestionText) {
+                suggestionText.textContent = '';
+            }
+        }
         
-        // Use typing animation
-        typeText(aiResponse, answer, 15);
-        updateQuestionSuggestions();
+        // Step 3: Wait for questions to fade out, then show AI response
+        setTimeout(async () => {
+            // Show loading text after questions have faded
+            aiResponse.innerHTML = '<p>Thinking...</p>';
+            // Let CSS handle display based on :not(:empty) selector
+            updateQuestionSuggestions();
+            
+            // Fetch and display response
+            const answer = await fetchAIResponse(question);
+            
+            // Use typing animation
+            typeText(aiResponse, answer, 15);
+            updateQuestionSuggestions();
+        }, 350); // Wait 350ms for fade-out transition (0.3s + small buffer)
     });
     
     aiSearch.addEventListener('keydown', async (e) => {

@@ -887,6 +887,8 @@ body.search-active .question-suggestions {
 
 body.search-active .question-suggestions.has-response {
     opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .suggestion-text {
@@ -912,14 +914,14 @@ body.light-mode .suggestion-text {
     font-size: 1.15rem;
     line-height: 1.9;
     display: none;
-    z-index: 5;
+    z-index: 8;
     text-align: left;
     background: none;
     border: none;
     padding: 0;
     backdrop-filter: none;
     border-radius: 0;
-    max-height: calc(100vh - 250px);
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
     word-wrap: break-word;
     transition: opacity 0.3s ease;
@@ -930,13 +932,36 @@ body.light-mode .suggestion-text {
     opacity: 1;
 }
 
-.hero.search-active .ai-response {
+/* Only show the box styling when search is active AND response has content */
+.hero.search-active .ai-response:not(:empty) {
+    /* Position response box above the search bar */
+    position: fixed;
+    bottom: 140px;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
     max-width: 800px;
+    max-height: calc(100vh - 280px);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+/* Hide the box when empty, even if search is active */
+.hero.search-active .ai-response:empty {
+    display: none;
 }
 
 .ai-response p {
     margin: 0 0 1.2rem 0;
     padding: 0;
+    line-height: 1.8;
 }
 
 .ai-response p:last-child {
@@ -944,13 +969,15 @@ body.light-mode .suggestion-text {
 }
 
 .ai-response h1, .ai-response h2, .ai-response h3 {
-    margin: 1.5rem 0 1rem 0;
-    font-weight: 600;
+    margin: 2rem 0 1rem 0;
+    font-weight: 700;
     line-height: 1.4;
+    color: #ffffff;
 }
 
 .ai-response h1 {
     font-size: 1.8rem;
+    margin-top: 0;
 }
 
 .ai-response h2 {
@@ -962,28 +989,59 @@ body.light-mode .suggestion-text {
 }
 
 .ai-response ul, .ai-response ol {
-    margin: 1rem 0;
-    padding-left: 2rem;
+    margin: 1.2rem 0;
+    padding-left: 2.5rem;
+    line-height: 1.8;
 }
 
 .ai-response li {
-    margin: 0.5rem 0;
+    margin: 0.6rem 0;
+    padding-left: 0.5rem;
+}
+
+.ai-response ul li {
+    list-style-type: disc;
+}
+
+.ai-response ol li {
+    list-style-type: decimal;
 }
 
 .ai-response code {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.2rem 0.4rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.2rem 0.5rem;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
+    color: #ffffff;
+}
+
+.ai-response pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ai-response pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.85em;
+    display: block;
+    white-space: pre;
 }
 
 .ai-response strong {
-    font-weight: 600;
+    font-weight: 700;
+    color: #ffffff;
 }
 
 .ai-response em {
     font-style: italic;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Stats Cards */
