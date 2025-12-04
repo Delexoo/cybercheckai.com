@@ -17,26 +17,37 @@ function createBinaryBackground() {
     function createBinaryColumn() {
         const column = document.createElement('div');
         column.className = 'binary-code';
-        column.textContent = randomBinary(Math.floor(Math.random() * 50) + 30);
+        const length = Math.floor(Math.random() * 7) + 1; // Random length between 1-7 characters
+        column.textContent = randomBinary(length);
         column.style.left = Math.random() * 100 + '%';
-        column.style.animationDelay = Math.random() * 10 + 's';
+        column.style.animationDelay = Math.random() * 2 + 's';
         column.style.animationDuration = (Math.random() * 5 + 8) + 's';
         binaryBg.appendChild(column);
 
+        // Update binary numbers randomly and fast
+        const updateInterval = setInterval(() => {
+            if (column.parentNode) {
+                column.textContent = randomBinary(length);
+            } else {
+                clearInterval(updateInterval);
+            }
+        }, 100); // Update every 100ms for fast random changes
+
         setTimeout(() => {
+            clearInterval(updateInterval);
             if (column.parentNode) {
                 column.remove();
             }
         }, 15000);
     }
 
-    // Create initial columns
-    for (let i = 0; i < 15; i++) {
-        setTimeout(() => createBinaryColumn(), i * 500);
+    // Create initial columns immediately and faster - more columns
+    for (let i = 0; i < 40; i++) {
+        setTimeout(() => createBinaryColumn(), i * 50); // More columns, faster creation
     }
 
-    // Continue creating columns
-    setInterval(createBinaryColumn, 1000);
+    // Continue creating columns more frequently
+    setInterval(createBinaryColumn, 300); // Create new columns every 300ms
 }
 
 // Initialize background animation when page loads
@@ -161,15 +172,45 @@ if (musicToggle) {
     musicToggle.addEventListener('click', toggleMouseTrail);
 }
 
+// Binary trail with throttling to prevent glitching
+let binaryTrails = [];
+let lastTrailTime = 0;
+const TRAIL_THROTTLE = 50; // Create trail every 50ms max
+const MAX_BINARY_TRAILS = 30;
+
 document.addEventListener('mousemove', function(e) {
+    const now = Date.now();
+    
+    // Throttle trail creation
+    if (now - lastTrailTime < TRAIL_THROTTLE) {
+        return;
+    }
+    lastTrailTime = now;
+    
+    // Limit number of trails
+    if (binaryTrails.length >= MAX_BINARY_TRAILS) {
+        const oldTrail = binaryTrails.shift();
+        if (oldTrail && oldTrail.parentNode) {
+            oldTrail.remove();
+        }
+    }
+    
     const trail = document.createElement('div');
     trail.className = 'binary-trail';
-    trail.textContent = randomBinary(Math.floor(Math.random() * 6) + 4);
+    trail.textContent = randomBinary(Math.floor(Math.random() * 7) + 1); // Max 7 characters
     trail.style.left = `${e.clientX + Math.random() * 12 - 6}px`;
     trail.style.top = `${e.clientY + Math.random() * 12 - 6}px`;
     document.body.appendChild(trail);
+    binaryTrails.push(trail);
+    
     setTimeout(() => {
-        trail.remove();
+        if (trail.parentNode) {
+            trail.remove();
+        }
+        const index = binaryTrails.indexOf(trail);
+        if (index > -1) {
+            binaryTrails.splice(index, 1);
+        }
     }, 1200);
 });
 
@@ -188,15 +229,78 @@ const aiResponse = document.getElementById('ai-response');
 
 function formatAIResponse(text) {
     // Clean up markdown-style formatting
-    return text
+    let formatted = text
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
         .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic text
-        .replace(/\n\n/g, '</p><p>') // Paragraphs
-        .replace(/\n/g, '<br>') // Line breaks
+        .replace(/\`(.*?)\`/g, '<code>$1</code>') // Inline code
+        .replace(/\n\n+/g, '</p><p>') // Multiple newlines = paragraphs
+        .replace(/\n/g, '<br>') // Single newlines = line breaks
         .replace(/^/, '<p>') // Start with paragraph
         .replace(/$/, '</p>') // End with paragraph
         .replace(/<p><\/p>/g, '') // Remove empty paragraphs
-        .replace(/\`(.*?)\`/g, '<code>$1</code>'); // Inline code
+        .replace(/<p>(<br>)+/g, '<p>') // Remove leading breaks in paragraphs
+        .replace(/(<br>)+<\/p>/g, '</p>'); // Remove trailing breaks in paragraphs
+    
+    return formatted;
+}
+
+let currentTypingInterval = null;
+
+function typeText(element, htmlText, speed = 15) {
+    // Clear any existing typing animation
+    if (currentTypingInterval) {
+        clearInterval(currentTypingInterval);
+        currentTypingInterval = null;
+    }
+    
+    element.innerHTML = '';
+    element.style.display = 'block';
+    
+    let htmlIndex = 0;
+    let result = '';
+    let inTag = false;
+    let tagBuffer = '';
+    
+    const processNext = () => {
+        if (htmlIndex >= htmlText.length) {
+            clearInterval(currentTypingInterval);
+            currentTypingInterval = null;
+            // Ensure final HTML is complete
+            element.innerHTML = htmlText;
+            return;
+        }
+        
+        const char = htmlText[htmlIndex];
+        
+        if (char === '<') {
+            inTag = true;
+            tagBuffer = '<';
+            htmlIndex++;
+            // Process tag immediately
+            while (htmlIndex < htmlText.length && htmlText[htmlIndex] !== '>') {
+                tagBuffer += htmlText[htmlIndex];
+                htmlIndex++;
+            }
+            if (htmlIndex < htmlText.length) {
+                tagBuffer += '>';
+                htmlIndex++;
+                result += tagBuffer;
+                tagBuffer = '';
+                inTag = false;
+                element.innerHTML = result;
+            }
+        } else {
+            // Regular text character
+            result += char;
+            htmlIndex++;
+            element.innerHTML = result;
+        }
+    };
+    
+    // Start typing
+    currentTypingInterval = setInterval(processNext, speed);
+    
+    return currentTypingInterval;
 }
 
 async function fetchAIResponse(question) {
@@ -235,28 +339,512 @@ async function fetchAIResponse(question) {
 }
 
 if (searchBtn && aiSearch && aiResponse) {
+    const hero = document.querySelector('.hero');
+    const searchContainer = document.querySelector('.search-container');
+    const escProgress = document.getElementById('esc-progress');
+    const progressFill = document.querySelector('.progress-circle-fill');
+    let escHoldTimer = null;
+    let isEscHeld = false;
+    let progressInterval = null;
+    const HOLD_DURATION = 1000; // 1 second
+    const CIRCUMFERENCE = 283; // 2 * PI * 45 (radius)
+    
+    // Animation state management
+    let searchBarAnimationInProgress = false;
+    let searchBarResetTimeout = null;
+    let searchBarMoveTimeout = null;
+    
+    function resetSearchBarPosition() {
+        // Prevent multiple simultaneous animations
+        if (searchBarAnimationInProgress) {
+            return;
+        }
+        
+        // Clear any pending animations
+        if (searchBarMoveTimeout) {
+            clearTimeout(searchBarMoveTimeout);
+            searchBarMoveTimeout = null;
+        }
+        
+        if (searchContainer && hero.classList.contains('search-active')) {
+            searchBarAnimationInProgress = true;
+            
+            // Get the original position (below subtitle)
+            const subtitle = document.querySelector('.subtitle');
+            if (subtitle) {
+                // First, contract the width
+                searchContainer.style.transition = 'max-width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                searchContainer.style.maxWidth = '600px';
+                searchContainer.style.width = '';
+                
+                // After width contracts, move back up
+                setTimeout(() => {
+                    // Get current visual position
+                    const currentRect = searchContainer.getBoundingClientRect();
+                    const currentTop = currentRect.top;
+                    const currentLeft = currentRect.left + (currentRect.width / 2);
+                    
+                    // Ensure we're fixed at current position (no transition)
+                    searchContainer.style.transition = 'none';
+                    searchContainer.style.position = 'fixed';
+                    searchContainer.style.top = currentTop + 'px';
+                    searchContainer.style.left = currentLeft + 'px';
+                    searchContainer.style.transform = 'translateX(-50%)';
+                    void searchContainer.offsetHeight; // Force reflow
+                    
+                    // Calculate target position
+                    const subtitleRect = subtitle.getBoundingClientRect();
+                    const targetViewportTop = subtitleRect.bottom + 48; // 3rem = 48px
+                    
+                    // Scroll to subtitle area smoothly
+                    const scrollY = window.scrollY || window.pageYOffset;
+                    const targetScroll = Math.max(0, subtitleRect.top + scrollY - window.innerHeight / 3);
+                    window.scrollTo({
+                        top: targetScroll,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Animate search bar to target position
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            // Re-enable transition
+                            searchContainer.style.transition = 'top 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                            searchContainer.style.top = targetViewportTop + 'px';
+                            
+                            // After animation completes, transition to relative without jump
+                            searchBarResetTimeout = setTimeout(() => {
+                                if (searchContainer && subtitle) {
+                                    // Get current visual position while still fixed
+                                    const finalRect = searchContainer.getBoundingClientRect();
+                                    const finalScrollY = window.scrollY || window.pageYOffset;
+                                    const visualTop = finalRect.top;
+                                    const visualLeft = finalRect.left;
+                                    
+                                    // Calculate where subtitle is now
+                                    const finalSubtitleRect = subtitle.getBoundingClientRect();
+                                    const subtitleBottomInDocument = finalSubtitleRect.bottom + finalScrollY;
+                                    
+                                    // Calculate the exact position where search bar should be in document flow
+                                    const targetDocumentTop = subtitleBottomInDocument + 48;
+                                    
+                                    // Calculate required scroll to align visual position with document position
+                                    // We want the element at visualTop to be at targetDocumentTop in the document
+                                    const requiredScroll = targetDocumentTop - visualTop;
+                                    
+                                    // Temporarily disable all transitions
+                                    searchContainer.style.transition = 'none';
+                                    
+                                    // Scroll to exact position (instant, no animation)
+                                    window.scrollTo({
+                                        top: requiredScroll,
+                                        behavior: 'auto'
+                                    });
+                                    
+                                    // Wait for browser to process scroll
+                                    requestAnimationFrame(() => {
+                                        requestAnimationFrame(() => {
+                                            // Verify positions are aligned
+                                            const checkRect = searchContainer.getBoundingClientRect();
+                                            const checkSubtitleRect = subtitle.getBoundingClientRect();
+                                            const expectedTop = checkSubtitleRect.bottom + 48;
+                                            const currentTop = checkRect.top;
+                                            
+                                            // Fine-tune scroll if needed
+                                            if (Math.abs(currentTop - expectedTop) > 2) {
+                                                const currentScroll = window.scrollY || window.pageYOffset;
+                                                const adjustScroll = currentScroll + (currentTop - expectedTop);
+                                                window.scrollTo({
+                                                    top: adjustScroll,
+                                                    behavior: 'auto'
+                                                });
+                                            }
+                                            
+                                            // Wait one more frame for final scroll adjustment
+                                            requestAnimationFrame(() => {
+                                                // Remove search-active class to prevent CSS conflicts
+                                                hero.classList.remove('search-active');
+                                                document.body.classList.remove('search-active');
+                                                
+                                                // Wait for class removal to take effect
+                                                requestAnimationFrame(() => {
+                                                    // Now switch to relative - positions should be perfectly aligned
+                                                    searchContainer.style.position = 'relative';
+                                                    searchContainer.style.top = '';
+                                                    searchContainer.style.left = '';
+                                                    searchContainer.style.transform = '';
+                                                    searchContainer.style.margin = '3rem auto 0';
+                                                    searchContainer.style.width = '';
+                                                    searchContainer.style.maxWidth = '';
+                                                    searchContainer.style.transition = '';
+                                                    
+                                                    searchBarAnimationInProgress = false;
+                                                    searchBarResetTimeout = null;
+                                                });
+                                            });
+                                        });
+                                    });
+                                } else {
+                                    hero.classList.remove('search-active');
+                                    document.body.classList.remove('search-active');
+                                    searchBarAnimationInProgress = false;
+                                    searchBarResetTimeout = null;
+                                }
+                            }, 2000);
+                        });
+                    });
+                }, 800);
+            } else {
+                searchBarAnimationInProgress = false;
+            }
+        }
+    }
+    
+    function resetToMainScreen() {
+        // Clear all intervals and timeouts
+        if (currentTypingInterval) {
+            clearInterval(currentTypingInterval);
+            currentTypingInterval = null;
+        }
+        if (searchBarResetTimeout) {
+            clearTimeout(searchBarResetTimeout);
+            searchBarResetTimeout = null;
+        }
+        if (searchBarMoveTimeout) {
+            clearTimeout(searchBarMoveTimeout);
+            searchBarMoveTimeout = null;
+        }
+        
+        // Reset animation state
+        searchBarAnimationInProgress = false;
+        
+        aiSearch.value = '';
+        aiResponse.innerHTML = '';
+        resetSearchBarPosition();
+        hero.classList.remove('search-active');
+        document.body.classList.remove('search-active');
+        hideProgress();
+    }
+    
+    function showProgress() {
+        if (escProgress) {
+            escProgress.classList.add('show');
+        }
+    }
+    
+    function hideProgress() {
+        if (escProgress) {
+            escProgress.classList.remove('show');
+        }
+        if (progressFill) {
+            progressFill.style.strokeDashoffset = CIRCUMFERENCE;
+        }
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+        }
+    }
+    
+    function updateProgress(elapsed) {
+        const progress = Math.min(elapsed / HOLD_DURATION, 1);
+        const offset = CIRCUMFERENCE - (progress * CIRCUMFERENCE);
+        if (progressFill) {
+            progressFill.style.strokeDashoffset = offset;
+        }
+    }
+    
+    function updateSearchState() {
+        const hasContent = aiSearch.value.trim().length > 0 || aiResponse.innerHTML.trim().length > 0;
+        if (hasContent) {
+            hero.classList.add('search-active');
+            document.body.classList.add('search-active');
+        } else {
+            resetSearchBarPosition();
+            hero.classList.remove('search-active');
+            document.body.classList.remove('search-active');
+        }
+    }
+    
+    // ESC key hold functionality
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !isEscHeld && document.body.classList.contains('search-active')) {
+            isEscHeld = true;
+            const startTime = Date.now();
+            showProgress();
+            
+            // Update progress every 10ms
+            progressInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                updateProgress(elapsed);
+                
+                if (elapsed >= HOLD_DURATION) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
+            }, 10);
+            
+            escHoldTimer = setTimeout(() => {
+                resetToMainScreen();
+                isEscHeld = false;
+            }, HOLD_DURATION);
+        }
+    });
+    
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'Escape') {
+            if (escHoldTimer) {
+                clearTimeout(escHoldTimer);
+                escHoldTimer = null;
+            }
+            isEscHeld = false;
+            hideProgress();
+        }
+    });
+    
+    // Question suggestions functionality
+    const questionSuggestions = document.getElementById('question-suggestions');
+    const suggestionText = document.querySelector('.suggestion-text');
+    const questions = [
+        "What is the most common cyber attack?",
+        "How do I know if my device is infected?",
+        "How can I protect my passwords?",
+        "What is phishing and how can I avoid it?",
+        "How do I stay safe on public Wi-Fi?",
+        "What is two-factor authentication?",
+        "How can I detect a phishing email?",
+        "What should I do if I'm hacked?",
+        "How do I create a strong password?",
+        "What is ransomware and how does it work?"
+    ];
+    
+    let questionIndex = 0;
+    let questionInterval = null;
+    
+    function updateQuestionSuggestions() {
+        const hasResponse = aiResponse.innerHTML.trim().length > 0 && !aiResponse.innerHTML.includes('Thinking...');
+        const isTyping = aiSearch.value.trim().length > 0;
+        
+        if (isTyping && !hasResponse && questionSuggestions) {
+            questionSuggestions.classList.remove('has-response');
+            if (!questionInterval) {
+                // Start showing questions (they will cycle automatically after typing/deleting)
+                showNextQuestion();
+                // No need for interval since questions cycle automatically after delete
+                questionInterval = setInterval(() => {
+                    // This is just a fallback, but showNextQuestion handles the cycle
+                }, 10000);
+            }
+        } else {
+            if (questionInterval) {
+                clearInterval(questionInterval);
+                questionInterval = null;
+            }
+            if (questionTypingInterval) {
+                clearInterval(questionTypingInterval);
+                questionTypingInterval = null;
+            }
+            isDeleting = false;
+            if (hasResponse && questionSuggestions) {
+                questionSuggestions.classList.add('has-response');
+            }
+        }
+    }
+    
+    let questionTypingInterval = null;
+    let isDeleting = false;
+    
+    function typeQuestion(text, element, speed = 30) {
+        // Clear any existing typing animation
+        if (questionTypingInterval) {
+            clearInterval(questionTypingInterval);
+            questionTypingInterval = null;
+        }
+        
+        element.textContent = '';
+        let charIndex = 0;
+        
+        const typeChar = () => {
+            if (charIndex < text.length) {
+                element.textContent += text[charIndex];
+                charIndex++;
+            } else {
+                clearInterval(questionTypingInterval);
+                questionTypingInterval = null;
+                // After typing is complete, wait a bit then start deleting
+                setTimeout(() => {
+                    deleteQuestion(element, speed);
+                }, 2500); // Wait 2.5 seconds before deleting (1 second longer)
+            }
+        };
+        
+        questionTypingInterval = setInterval(typeChar, speed);
+        return questionTypingInterval;
+    }
+    
+    function deleteQuestion(element, speed = 20) {
+        if (questionTypingInterval) {
+            clearInterval(questionTypingInterval);
+            questionTypingInterval = null;
+        }
+        
+        isDeleting = true;
+        let text = element.textContent;
+        
+        const deleteChar = () => {
+            if (text.length > 0) {
+                text = text.slice(0, -1);
+                element.textContent = text;
+            } else {
+                clearInterval(questionTypingInterval);
+                questionTypingInterval = null;
+                isDeleting = false;
+                // After deleting is complete, move to next question
+                showNextQuestion();
+            }
+        };
+        
+        questionTypingInterval = setInterval(deleteChar, speed);
+        return questionTypingInterval;
+    }
+    
+    function showNextQuestion() {
+        if (suggestionText && !isDeleting) {
+            // Clear any existing typing
+            if (questionTypingInterval) {
+                clearInterval(questionTypingInterval);
+                questionTypingInterval = null;
+            }
+            
+            // Get next question
+            const nextQuestion = questions[questionIndex];
+            questionIndex = (questionIndex + 1) % questions.length;
+            
+            // Type out the next question
+            typeQuestion(nextQuestion, suggestionText, 30);
+        }
+    }
+    
+    // Smoothly transition search bar to bottom
+    function moveSearchBarToBottom() {
+        // Prevent multiple simultaneous animations
+        if (searchBarAnimationInProgress) {
+            return;
+        }
+        
+        // Clear any pending reset animations
+        if (searchBarResetTimeout) {
+            clearTimeout(searchBarResetTimeout);
+            searchBarResetTimeout = null;
+        }
+        
+        if (searchContainer && !hero.classList.contains('search-active')) {
+            searchBarAnimationInProgress = true;
+            
+            // Get current position
+            const rect = searchContainer.getBoundingClientRect();
+            const currentTop = rect.top;
+            const currentLeft = rect.left + (rect.width / 2);
+            const viewportHeight = window.innerHeight;
+            const targetBottom = 32; // 2rem = 32px
+            const targetTop = viewportHeight - targetBottom - rect.height;
+            
+            // Disable transition temporarily
+            searchContainer.style.transition = 'none';
+            
+            // Set to fixed at current visual position
+            searchContainer.style.position = 'fixed';
+            searchContainer.style.top = currentTop + 'px';
+            searchContainer.style.left = currentLeft + 'px';
+            searchContainer.style.transform = 'translateX(-50%)';
+            searchContainer.style.margin = '0';
+            searchContainer.style.width = rect.width + 'px';
+            searchContainer.style.bottom = '';
+            
+            // Force reflow to apply the fixed position
+            void searchContainer.offsetHeight;
+            
+            // Re-enable transition and animate to target position
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (searchContainer && !hero.classList.contains('search-active')) {
+                        searchContainer.style.transition = 'top 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), max-width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        
+                        // Animate to target position
+                        searchContainer.style.top = targetTop + 'px';
+                        searchContainer.style.width = '';
+                        
+                        // Add class to trigger CSS for other properties
+                        hero.classList.add('search-active');
+                        document.body.classList.add('search-active');
+                        
+                        // Mark animation as complete after transition
+                        searchBarMoveTimeout = setTimeout(() => {
+                            searchBarAnimationInProgress = false;
+                            searchBarMoveTimeout = null;
+                        }, 2000);
+                    }
+                });
+            });
+        } else {
+            hero.classList.add('search-active');
+            document.body.classList.add('search-active');
+        }
+    }
+    
+    // Add search-active class when user types
+    let inputTimeout = null;
+    aiSearch.addEventListener('input', () => {
+        // Clear any pending input handling
+        if (inputTimeout) {
+            clearTimeout(inputTimeout);
+        }
+        
+        // Debounce to prevent rapid fire calls
+        inputTimeout = setTimeout(() => {
+            if (aiSearch.value.trim().length > 0) {
+                if (!hero.classList.contains('search-active')) {
+                    moveSearchBarToBottom();
+                }
+                updateQuestionSuggestions();
+            } else if (aiResponse.innerHTML.trim().length === 0) {
+                // Only remove if response is also empty
+                updateSearchState();
+                updateQuestionSuggestions();
+            }
+            inputTimeout = null;
+        }, 50);
+    });
+    
     searchBtn.addEventListener('click', async () => {
         const question = aiSearch.value.trim();
-        if (!question) return;
+        if (!question) {
+            if (currentTypingInterval) {
+                clearInterval(currentTypingInterval);
+                currentTypingInterval = null;
+            }
+            aiResponse.innerHTML = '';
+            updateSearchState();
+            updateQuestionSuggestions();
+            return;
+        }
         
-        // Show response bubble and add loading text
+        // Activate search mode with smooth transition
+        moveSearchBarToBottom();
+        
+        // Show loading text
         aiResponse.innerHTML = '<p>Thinking...</p>';
-        aiResponse.classList.add('show');
+        aiResponse.style.display = 'block';
+        updateQuestionSuggestions();
         
         const answer = await fetchAIResponse(question);
-        aiResponse.innerHTML = answer;
+        
+        // Use typing animation
+        typeText(aiResponse, answer, 15);
+        updateQuestionSuggestions();
     });
     
     aiSearch.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
             searchBtn.click();
-        }
-    });
-    
-    // Hide response when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-container')) {
-            aiResponse.classList.remove('show');
         }
     });
 }

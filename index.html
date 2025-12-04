@@ -11,27 +11,11 @@
         <nav class="navbar">
             <div class="navbar-logo">CyberCheck AI</div>
             <ul class="navbar-menu">
-                <li><a href="articles.html">Articles</a></li>
-                <li><a href="attacks.html">Cyber Attacks</a></li>
-                <li><a href="tools.html">Security Tools</a></li>
-                <li><a href="viruses.html">Viruses</a></li>
-                <li><a href="resources.html">Resources</a></li>
             </ul>
             <div class="navbar-controls">
                 <button id="theme-toggle" class="theme-toggle" title="Toggle Dark/Light Mode">
                     <span class="theme-icon">🌙</span>
                 </button>
-                <button id="music-toggle" class="music-toggle" title="Toggle Mouse Trail">
-                    <span class="music-icon">�</span>
-                </button>
-                <div class="navbar-dropdown">
-                    <button class="dropdown-btn">More ▾</button>
-                    <div class="dropdown-content">
-                        <a href="#about">About</a>
-                        <a href="#tools">Tools</a>
-                        <a href="#contact">Contact</a>
-                    </div>
-                </div>
             </div>
         </nav>
     </header>
@@ -47,77 +31,19 @@
                     <input type="text" id="ai-search" placeholder="Ask me any cybersecurity question!">
                     <button id="search-btn" class="ai-search-btn"><span>✨</span></button>
                 </div>
+                <div class="esc-hint-container">
+                    <div id="esc-progress" class="esc-progress">
+                        <svg class="progress-circle" viewBox="0 0 100 100">
+                            <circle class="progress-circle-bg" cx="50" cy="50" r="45"></circle>
+                            <circle class="progress-circle-fill" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                    </div>
+                    <div id="esc-hint" class="esc-hint">Hold "ESC" to go back to main screen</div>
+                </div>
                 <div id="ai-response" class="ai-response"></div>
             </div>
-            <div class="stats-cards">
-                <div class="stats-card threat">
-                    <div class="stats-icon">&#9888;</div>
-                    <div class="stats-main">2.3M</div>
-                    <div class="stats-label">Active Threats</div>
-                    <div class="stats-change up">+12%</div>
-                </div>
-                <div class="stats-card users">
-                    <div class="stats-icon">&#128100;</div>
-                    <div class="stats-main">50K+</div>
-                    <div class="stats-label">Protected Users</div>
-                    <div class="stats-change down">+28%</div>
-                </div>
-                <div class="stats-card funfact">
-                    <div class="stats-icon">&#128161;</div>
-                    <div class="stats-main">95%</div>
-                    <div class="stats-label">Attacks Prevented by AI</div>
-                    <div class="stats-change up">Fun Fact</div>
-                </div>
-                <div class="stats-card percentage">
-                    <div class="stats-icon">&#128202;</div>
-                    <div class="stats-main">72%</div>
-                    <div class="stats-label">Phishing Attempts</div>
-                    <div class="stats-change up">Detected</div>
-                </div>
-            </div>
-            <div class="quick-actions">
-                <h2>Quick Actions</h2>
-                <div class="actions-grid">
-                    <a href="#" class="action-card ai-assistant">
-                        <div class="action-icon">&#128274;</div>
-                        <div class="action-title">AI Security Assistant</div>
-                        <div class="action-desc">Get instant answers to your cybersecurity questions</div>
-                    </a>
-                    <a href="articles.html" class="action-card articles">
-                        <div class="action-icon">&#127760;</div>
-                        <div class="action-title">Latest Articles</div>
-                        <div class="action-desc">Stay updated with cybersecurity news and insights</div>
-                    </a>
-                    <a href="tools.html" class="action-card tools">
-                        <div class="action-icon">&#128273;</div>
-                        <div class="action-title">Security Tools</div>
-                        <div class="action-desc">Access free and recommended security tools</div>
-                    </a>
-                    <a href="resources.html" class="action-card resources">
-                        <div class="action-icon">&#128065;</div>
-                        <div class="action-title">Resources Hub</div>
-                        <div class="action-desc">Find guides, downloads, and best practices</div>
-                    </a>
-                </div>
-            </div>
-            <div class="common-questions">
-                <h2>Common Questions</h2>
-                <ul>
-                    <li>What is the most common cyber attack?</li>
-                    <li>How do I know if my device is infected?</li>
-                    <li>How can I protect my passwords?</li>
-                    <li>What is phishing and how can I avoid it?</li>
-                    <li>How do I stay safe on public Wi-Fi?</li>
-                </ul>
-            </div>
-            <div class="fun-facts">
-                <h2>Cybersecurity Fun Facts</h2>
-                <ul>
-                    <li>Every 39 seconds, a new cyber attack occurs.</li>
-                    <li>95% of cybersecurity breaches are caused by human error.</li>
-                    <li>AI can detect threats up to 10x faster than humans.</li>
-                    <li>Phishing is the most common cyber crime worldwide.</li>
-                </ul>
+            <div id="question-suggestions" class="question-suggestions">
+                <div class="suggestion-text"></div>
             </div>
         </section>
     </main>
