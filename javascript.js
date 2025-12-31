@@ -319,7 +319,7 @@ function formatAIResponse(text) {
 
 let currentTypingInterval = null;
 
-function typeText(element, htmlText, speed = 15) {
+function typeText(element, htmlText, speed = 15, onComplete = null) {
     // Clear any existing typing animation
     if (currentTypingInterval) {
         clearInterval(currentTypingInterval);
@@ -340,6 +340,10 @@ function typeText(element, htmlText, speed = 15) {
             currentTypingInterval = null;
             // Ensure final HTML is complete
             element.innerHTML = htmlText;
+            // Call completion callback if provided
+            if (onComplete) {
+                onComplete();
+            }
             return;
         }
         
@@ -377,68 +381,11 @@ function typeText(element, htmlText, speed = 15) {
 }
 
 async function fetchAIResponse(question) {
-    // Google Gemini API
-    const apiKey = 'AIzaSyDhFyw86NwvjF8HTaM0XQvaqHYFSBNjWks';
+    // API has been removed for safety protocols
+    // Add delay to give user time to read
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Check if API key is valid
-    if (!apiKey || apiKey.trim() === '') {
-        return 'Please configure your Google Gemini API key. Get one from https://aistudio.google.com/apikey';
-    }
-    
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-    const body = {
-        contents: [
-            {
-                parts: [
-                    {
-                        text: question
-                    }
-                ]
-            }
-        ]
-    };
-    try {
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
-        
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            console.error('API Error:', res.status, errorData);
-            
-            // Provide helpful error messages
-            if (res.status === 400 && errorData.error?.message?.includes('API key')) {
-                return 'Invalid API key. Please check that you have:\n1. Replaced "YOUR_API_KEY_HERE" with your actual API key\n2. Got your key from https://aistudio.google.com/apikey\n3. Enabled the Gemini API in Google Cloud Console';
-            }
-            
-            return `Error: ${res.status} - ${errorData.error?.message || 'Failed to get response'}`;
-        }
-        
-        const data = await res.json();
-        console.log('API Response:', data);
-        
-        // Check for response in different possible structures
-        if (data.candidates && data.candidates[0]) {
-            const candidate = data.candidates[0];
-            if (candidate.content && candidate.content.parts && candidate.content.parts[0]) {
-                const text = candidate.content.parts[0].text;
-                if (text) {
-                    return formatAIResponse(text);
-                }
-            }
-        }
-        
-        // If we get here, the response structure is unexpected
-        console.error('Unexpected response structure:', data);
-        return 'Sorry, I could not find an answer. The response format was unexpected.';
-    } catch (err) {
-        console.error('Fetch error:', err);
-        return `Error connecting to AI service: ${err.message}`;
-    }
+    return 'Service Temporarily Unavailable\n\nThe API key has been removed by the Owner for security measures. Please check back later.';
 }
 
 if (searchBtn && aiSearch && aiResponse) {
@@ -1040,8 +987,13 @@ if (searchBtn && aiSearch && aiResponse) {
             // Fetch and display response
             const answer = await fetchAIResponse(question);
             
-            // Use typing animation
-            typeText(aiResponse, answer, 15);
+            // Use typing animation with callback to keep message visible for 10 seconds after completion
+            typeText(aiResponse, answer, 15, () => {
+                // Message has finished printing, keep it visible for 10 seconds
+                setTimeout(() => {
+                    // Message has been visible for 10 seconds, it will remain visible until user clears it
+                }, 10000);
+            });
             updateQuestionSuggestions();
         }, 350); // Wait 350ms for fade-out transition (0.3s + small buffer)
     });
